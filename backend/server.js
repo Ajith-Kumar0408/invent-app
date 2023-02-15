@@ -3,12 +3,31 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
 const cors = require("cors");
+const userRoute = require("./routes/userRoute");
+const errorHandler = require("./middleWare/errorMiddleware");
 
 const app = express()
 
-const PORT = process.env.PORT || 5000;
+//middleware
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(bodyparser.json());
+
+//routes middleware
+
+app.use("/api/users",userRoute);
+
+//Rotes
+app.get("/", (req, res)=> {
+    res.send("Home Page");
+});
+
+//error middleware
+app.use(errorHandler);
 
 //connect to DB to start server
+mongoose.set('strictQuery',true);
+const PORT = process.env.PORT || 5000;
 mongoose
     .connect(process.env.MONGO_URI)
     .then(()=> {
@@ -17,4 +36,4 @@ mongoose
         })
     }
     )
-    .catch((err)=> console.log(err))
+    .catch((err)=> console.log(err));
